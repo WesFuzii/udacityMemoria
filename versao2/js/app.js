@@ -29,6 +29,10 @@ function show(e) {
     e.toggleClass('open');
 }
 
+function wrong(e) {
+    e.toggleClass('wrong');
+}
+
 function match(e) {
     e.toggleClass('match');
 }
@@ -39,13 +43,27 @@ function pushCard(e) {
 
 function addCounter() {
     contador.text(parseInt(contador.text()) + 1);
-    $('.stars').append('<li><i class="fa fa-star"></i></li>');
+    if (contador.text() == '20' || contador.text() == '30') {
+        $('.stars').children()[0].remove();
+    }
 }
 
 function victory() {
-    var msg = 'Venceu!\nTentativas: '+contador.text();
-    alert(msg);
+    $(function () {
+        $('.movesFinal').text($('.moves').text());
+        $('.starsFinal').append($('.stars').html());
+        $(".dialog").css('visibility','visible');
+        $(".dialog").dialog();
+    });    
 }
+
+$.wait = function (ms) {
+    var defer = $.Deferred();
+    setTimeout(function () {
+        defer.resolve();
+    }, ms);
+    return defer;
+};
 
 $('.card').click(function () {
     if (!$(this).hasClass('open') && !$(this).hasClass('match')) {
@@ -57,15 +75,17 @@ $('.card').click(function () {
                 match(openCards[0]);
                 match(openCards[1]);
             } else {
-                show(openCards[0]);
-                show(openCards[1]);
-            }            
+                $(this).hide('slow', function(){
+                    show(openCards[0]);
+                    show(openCards[1]);
+                });               
+            }
             openCards = [];
         }
         if ($('.card.open').length == 16) {
             victory();
         }
-    }
+    }    
 });
 
 $('.restart').click(function () {
