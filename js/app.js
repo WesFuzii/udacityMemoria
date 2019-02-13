@@ -1,23 +1,22 @@
 /*
  * Timer
  */
-var timerVar = setInterval(countTimer, 1000);
-var totalSeconds = 0;
+const timerVar = setInterval(countTimer, 1000);
+let totalSeconds = 0;
 
 function countTimer() {
     ++totalSeconds;
-    var hour = Math.floor(totalSeconds / 3600);
-    var minute = Math.floor((totalSeconds - hour * 3600) / 60);
-    var seconds = totalSeconds - (hour * 3600 + minute * 60);
-
-    document.getElementById("timer").innerHTML = hour + ":" + minute + ":" + seconds;
+    const hour = Math.floor(totalSeconds / 3600);
+    const minute = Math.floor((totalSeconds - hour * 3600) / 60);
+    const seconds = totalSeconds - (hour * 3600 + minute * 60);
+    $('#timer').html(hour + ":" + minute + ":" + seconds);
 }
 
 /*
  * Create a list that holds all of your cards
  */
-var lista = $('.card');
-var openCards = [];
+let lista = $('.card');
+let openCards = [];
 
 /*
  * Display the cards on the page
@@ -43,7 +42,7 @@ function shuffle(array) {
 }
 lista = shuffle(lista);
 $('.card').remove();
-var deck = $('.deck');
+const deck = $('.deck');
 $.each(lista, function (index, value) {
     deck.append(value);
 });
@@ -60,8 +59,8 @@ $.each(lista, function (index, value) {
  */
 
 function addCounter() {
-    var tentativas = $('.moves');
-    var stars = $('.stars');
+    const tentativas = $('.moves');
+    const stars = $('.stars');
     tentativas.text(parseInt(tentativas.text()) + 1);
 
     if (tentativas.text() == '15' || tentativas.text() == '30') {
@@ -79,33 +78,43 @@ function vitoria() {
     }
 }
 
+function girarCard(e) {
+    e.toggleClass('girar');
+}
+
+function pushCard(e) {
+    openCards.push(e);
+}
+
+function validarCard() {
+    if (openCards[0].find('i').attr('class') == openCards[1].find('i').attr('class')) {
+        openCards[0].find('.open').toggleClass('match');
+        openCards[1].find('.open').toggleClass('match');
+        setTimeout(function () {
+            vitoria();
+        }, 500);
+    } else {
+        girarCard(openCards[0]);
+        girarCard(openCards[1]);
+        openCards[0].find('.closed').removeClass('desabilitado');
+        openCards[1].find('.closed').removeClass('desabilitado');
+    }
+    openCards.pop();
+    openCards.pop();
+    addCounter();
+}
+
 $('.card').on('click', function () {
     if (openCards.length <= 1) {
         if (!$(this).find('.closed').hasClass('desabilitado')) {
-            $(this).toggleClass('girar');
-            openCards.push($(this));
+            girarCard($(this));
+            pushCard($(this));
             $(this).find('.closed').addClass('desabilitado');
-
             if (openCards.length == 2) {
                 setTimeout(function () {
-                    if (openCards[0].find('i').attr('class') == openCards[1].find('i').attr('class')) {
-                        openCards[0].find('.open').toggleClass('match');
-                        openCards[1].find('.open').toggleClass('match');
-                        setTimeout(function () {
-                            vitoria();
-                        }, 500);
-                    } else {
-                        openCards[0].toggleClass('girar');
-                        openCards[1].toggleClass('girar');
-                        openCards[0].find('.closed').removeClass('desabilitado');
-                        openCards[1].find('.closed').removeClass('desabilitado');
-                    }
-                    openCards.pop();
-                    openCards.pop();
-                    addCounter();
+                    validarCard();
                 }, 1000);
             }
-
         }
     }
 });
