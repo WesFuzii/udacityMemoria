@@ -9,7 +9,7 @@ function countTimer() {
     const hour = Math.floor(totalSeconds / 3600);
     const minute = Math.floor((totalSeconds - hour * 3600) / 60);
     const seconds = totalSeconds - (hour * 3600 + minute * 60);
-    $('#timer').html(hour + ":" + minute + ":" + seconds);
+    $('#timer').html(hour + ':' + minute + ':' + seconds);
 }
 
 /*
